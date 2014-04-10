@@ -10,18 +10,20 @@ wrap = (originalFn, fn, opts) ->
   wrapper.__org = originalFn
   wrapper
 
+unwrap = (fn) -> fn.__org or fn
+
 # Monkey patch all the functions in methods list
 # and replace them with our very own ones
 exports.patch = (opts) ->
   opts = _.extend {}, @defaults, opts
   for name, fn of methods
-    originalFn = fn.__org or util[name]
+    originalFn = unwrap util[name]
     util[name] = wrap originalFn, fn, opts
 
 # Restore all patched functions
 exports.restore = ->
-  for name of methods when util[name].__org?
-    util[name] = util[name].__org
+  for name of methods
+    util[name] = unwrap util[name]
 
 exports.defaults =
   silent  : true

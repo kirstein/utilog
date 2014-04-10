@@ -8,6 +8,13 @@ describe 'utilog', ->
 
   describe '#patch', ->
     it 'should exist', -> mod.patch.should.be.an.Function
+
+    it 'should write original fn as __org after multiple patching', ->
+      orgFn = util.log
+      mod.patch()
+      mod.patch()
+      util.log.__org.should.be.eql orgFn
+
     it 'should write original fn as __org', ->
       orgFn = util.log
       mod.patch()
