@@ -23,11 +23,13 @@ exports.patch = (opts = {}) ->
     # not the wrapper itself
     originalFn = unwrap util[name]
     util[name] = wrap originalFn, fn, opts
+  @
 
 # Restore all patched functions
 exports.restore = ->
   for name of methods
     util[name] = unwrap util[name]
+  @
 
 exports.defaults =
   silent  : false

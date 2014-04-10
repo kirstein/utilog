@@ -9,6 +9,7 @@ describe 'utilog', ->
 
   describe '#patch', ->
     it 'should exist', -> mod.patch.should.be.an.Function
+    it 'should should be chainable', -> mod.patch().should.eql mod
 
     it 'should write original fn as __org after multiple patching', ->
       orgFn = util.log
@@ -28,6 +29,7 @@ describe 'utilog', ->
 
   describe '#restore', ->
     it 'should exist', -> mod.restore.should.be.an.Function
+    it 'should should be chainable', -> mod.restore().should.eql mod
     it 'should release overwritten log method', ->
       orgLog = util.log
       mod.patch()
