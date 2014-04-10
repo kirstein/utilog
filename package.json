@@ -8,12 +8,14 @@
     "url": "https://github.com/kirstein/utilog.git"
   },
   "scripts": {
-    "test" : "grunt test"
+    "test": "grunt test"
   },
   "config": {
     "blanket": {
       "loader": "./node-loaders/coffee-script",
-      "data-cover-only": [ "src" ],
+      "data-cover-only": [
+        "src"
+      ],
       "data-cover-never": "node_modules"
     }
   },
@@ -36,5 +38,7 @@
     "coffee-script": "~1.7.1",
     "grunt-contrib-clean": "^0.5.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "lodash": "^2.4.1"
+  }
 }
