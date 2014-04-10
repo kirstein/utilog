@@ -1,5 +1,6 @@
-mod  = require "#{process.cwd()}/src/utilog"
-util = require 'util'
+mod   = require "#{process.cwd()}/src/utilog"
+util  = require 'util'
+sinon = require 'sinon'
 
 describe 'utilog', ->
   afterEach -> mod.restore()
@@ -34,8 +35,19 @@ describe 'utilog', ->
       util.log.should.eql orgLog
 
   describe 'monkey patching', ->
+    beforeEach -> mod.patch()
+
     describe '#log', ->
+      it 'should pipe output to stdout', sinon.test ->
+        @stub process.stdout, 'write'
+        util.log 'lolo'
+        process.stdout.write.args[0].toString().should.containEql 'lolo'
+
+      it 'should not write to stdout if its silent', sinon.test ->
+        mod.patch silent: true
+        @stub process.stdout, 'write'
+        util.log 'lolo'
+        process.stdout.write.called.should.not.be.ok
+
+    describe '#debug', ->
       it 'should be false', ->
-        orgLog = util.log
-        mod.patch()
-        util.log.should.not.eql orgLog
