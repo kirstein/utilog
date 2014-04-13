@@ -46,10 +46,26 @@ describe 'utilog', ->
         process.stdout.write.args[0].toString().should.containEql 'lolo'
 
       it 'should not write to stdout if its silent', sinon.test ->
-        mod.patch silent: true
         @stub process.stdout, 'write'
+        mod.patch silent: true
         util.log 'lolo'
         process.stdout.write.called.should.not.be.ok
 
     describe '#debug', ->
-      it 'should be false', ->
+      it 'should not pipe to debuge if verbose set to false', sinon.test ->
+        @stub process.stderr, 'write'
+        mod.patch verbose : false
+        util.debug 'hello'
+        process.stderr.write.called.should.not.be.ok
+
+      it 'should pipe to debug if verbose set to true', sinon.test ->
+        @stub process.stderr, 'write'
+        mod.patch verbose : true
+        util.debug 'test'
+        process.stderr.write.called.should.be.ok
+
+      it 'should pipe to not debug if verbose set to false', sinon.test ->
+        @stub process.stderr, 'write'
+        mod.patch verbose : false
+        util.debug 'test'
+        process.stderr.write.called.should.not.be.ok

@@ -4,6 +4,8 @@ util = require 'util'
 methods =
   log : ({ silent }, orgFn, str) ->
     orgFn str unless silent
+  debug: ({ verbose }, orgFn, str) ->
+    orgFn str if verbose
 
 # Assure that the current functio always returns this
 chain = (fn) -> ->
