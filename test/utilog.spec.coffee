@@ -36,6 +36,30 @@ describe 'utilog', ->
       mod.restore()
       util.log.should.eql orgLog
 
+  describe 'method patching', ->
+    afterEach -> mod.restore()
+
+    it 'should be able to patch method given with options', ->
+      spy = sinon.spy()
+      mod.patch methods : log : spy
+      util.log 'lolo'
+      spy.called.should.be.ok
+
+    it 'should only patch given method and not remove other optional ones', sinon.test ->
+      @stub process.stdout, 'write'
+      spy = sinon.spy()
+      mod.patch methods : { log : spy }, silent : true
+      util.debug 'lolo'
+      process.stdout.write.called.should.not.be.ok
+
+    it 'should be able to restore methods given with options', sinon.test ->
+      @stub process.stdout, 'write'
+      spy = sinon.spy()
+      mod.patch methods : log : spy
+      mod.restore()
+      util.log 'lolo'
+      spy.called.should.not.be.ok
+
   describe 'monkey patching', ->
     beforeEach -> mod.patch()
 
