@@ -1,6 +1,6 @@
 {
   "name": "utilog",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "monkey patch utils for logging purposes",
   "homepage": "https://github.com/kirstein/utilog",
   "repository": {
