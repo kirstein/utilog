@@ -1,49 +1,69 @@
 (function() {
-  var methods, util, wrap, _;
+  var patched, unwrap, util, wrap, _;
 
   _ = require('lodash');
 
   util = require('util');
 
-  methods = {
-    log: function(opts, str) {
-      return console.log(str.toUpperCase());
-    }
-  };
+  patched = {};
 
-  wrap = function(originalFn, fn, opts) {
+  wrap = function(orgFn, fn, opts) {
     var wrapper;
-    wrapper = _.wrap(opts, fn);
-    wrapper.__org = originalFn;
+    wrapper = _.partial(fn, opts, orgFn);
+    wrapper.__org = orgFn;
     return wrapper;
   };
 
-  exports.patch = function(opts) {
-    var fn, name, originalFn, _results;
-    opts = _.extend({}, this.defaults, opts);
-    _results = [];
-    for (name in methods) {
-      fn = methods[name];
-      originalFn = fn.__org || util[name];
-      _results.push(util[name] = wrap(originalFn, fn, opts));
-    }
-    return _results;
+  unwrap = function(fn) {
+    return fn.__org || fn;
   };
 
-  exports.restore = function() {
-    var name, _results;
-    _results = [];
-    for (name in methods) {
-      if (util[name].__org != null) {
-        _results.push(util[name] = util[name].__org);
+  exports.patch = (function(_this) {
+    return function(opts) {
+      var fn, name, originalFn, _ref;
+      if (opts == null) {
+        opts = {};
       }
+      opts = _.extend({}, _this.defaults, opts);
+      _ref = opts.methods;
+      for (name in _ref) {
+        fn = _ref[name];
+        originalFn = unwrap(util[name]);
+        patched[name] = util[name] = wrap(originalFn, fn, opts);
+      }
+      return _this;
+    };
+  })(this);
+
+  exports.restore = function() {
+    var fn, name;
+    for (name in patched) {
+      fn = patched[name];
+      util[name] = unwrap(fn);
+      delete patched[name];
     }
-    return _results;
+    return this;
   };
 
   exports.defaults = {
-    silent: true,
-    verbose: true
+    silent: false,
+    verbose: false,
+    methods: {
+      log: function(_arg, orgFn, str) {
+        var silent;
+        silent = _arg.silent;
+        if (!silent) {
+          return orgFn(str);
+        }
+      },
+      debug: function(_arg, orgFn, str) {
+        var verbose;
+        verbose = _arg.verbose;
+        if (verbose) {
+          return orgFn(str);
+        }
+      }
+    }
   };
 
 }).call(this);
